@@ -16,9 +16,7 @@ def GoodPointsTrain(img, bf):
 
 
 def GoodPoints(img, img2, bf):
-    des_img = np.float32(img)
-    des_img2 = np.float32(img2)
-    matches = bf.knnMatch(des_img, des_img2, k=2)
+    matches = bf.knnMatch(img, img2, k=2)
 
     good = []
     for m, n in matches:
@@ -62,6 +60,10 @@ def Draw(images, tablePath, name, withContour):
         cleancopy = table.copy()
         cv2.drawContours(image=image_copy, contours=contours, contourIdx=-1, color=(0, 255, 0), thickness=2,
                          lineType=cv2.LINE_AA)
+
+        image_copy = cv2.resize(image_copy, (int(image_copy.shape[1] / 2), int(image_copy.shape[0] / 2)))
+        cv2.imshow("table", image_copy)
+        cv2.waitKey(0)
         cardAlreadyPicked = list()
         for contour in contours:
             x, y, w, h = cv2.boundingRect(contour)
@@ -97,11 +99,7 @@ def Draw(images, tablePath, name, withContour):
         kp_table, des_table = orb_table.detectAndCompute(table, None)
         for img in img_lst:
             i = i + 1
-            kp_img = img_lst[i]
-            des_img = orb_img.detectAndCompute(img, None)
-
-            des_img = np.float32(des_img)
-            des_table = np.float32(des_table)
+            kp_img, des_img = orb_table.detectAndCompute(img, None)
             good = GoodPoints(des_img, des_table, bf)
             print(name[i] + ": " + str(len(good)))
 
